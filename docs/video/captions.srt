@@ -1,0 +1,235 @@
+1
+00:00:00,758 --> 00:00:04,122
+This is SANCHAR, for problem statement SIH26123
+
+2
+00:00:04,142 --> 00:00:06,006
+from Bharat Electronics Limited:
+
+3
+00:00:06,026 --> 00:00:08,751
+a fleet of autonomous mobile robots with no master.
+
+4
+00:00:08,771 --> 00:00:10,880
+No server, no leader, no broker.
+
+5
+00:00:11,358 --> 00:00:15,757
+Today, one central server plans the whole fleet over Wi-Fi.
+
+6
+00:00:15,777 --> 00:00:18,050
+That means network latency, Wi-Fi dead zones
+
+7
+00:00:18,070 --> 00:00:22,053
+and a single point of failure: when the link drops, every robot stops.
+
+8
+00:00:22,073 --> 00:00:24,105
+The targets: zero inter-robot collisions,
+
+9
+00:00:24,125 --> 00:00:27,080
+and at least 20% faster than stop-and-wait.
+
+10
+00:00:27,758 --> 00:00:29,997
+The dashboard shows live positions and battery,
+
+11
+00:00:30,017 --> 00:00:32,349
+and it only listens to the robots' radio.
+
+12
+00:00:32,369 --> 00:00:34,527
+Each line is a robot's broadcast plan.
+
+13
+00:00:34,547 --> 00:00:38,635
+At single-lane choke points, a corridor gate passes one direction at a time,
+
+14
+00:00:38,655 --> 00:00:41,921
+and push, swap and yield rules with a wait-for cycle breaker
+
+15
+00:00:41,941 --> 00:00:44,013
+resolve deadlocks in real time.
+
+16
+00:00:44,491 --> 00:00:46,734
+A pallet blocks an aisle.
+
+17
+00:00:46,754 --> 00:00:49,457
+The robot that sees it broadcasts an obstacle report,
+
+18
+00:00:49,477 --> 00:00:50,278
+robots re-route,
+
+19
+00:00:50,298 --> 00:00:54,380
+and blocked orders are released and re-auctioned on a CRDT task board.
+
+20
+00:00:54,858 --> 00:00:56,954
+Now the Wi-Fi dies over part of the floor,
+
+21
+00:00:56,974 --> 00:00:59,817
+and nearby robots keep talking over short-range links.
+
+22
+00:00:59,837 --> 00:01:02,931
+Then a robot fails.
+
+23
+00:01:02,951 --> 00:01:05,084
+Its order re-opens, another robot wins it,
+
+24
+00:01:05,104 --> 00:01:06,934
+and the rest route around it.
+
+25
+00:01:06,954 --> 00:01:09,013
+Collisions: still zero.
+
+26
+00:01:09,491 --> 00:01:11,281
+Every robot runs the same edge node,
+
+27
+00:01:11,301 --> 00:01:14,048
+designed for Raspberry Pi or Jetson class hardware.
+
+28
+00:01:14,068 --> 00:01:16,707
+It shares its localization and intent with peers,
+
+29
+00:01:16,727 --> 00:01:19,046
+bids for orders in a decentralized auction,
+
+30
+00:01:19,066 --> 00:01:21,730
+and does multi-agent path planning on board:
+
+31
+00:01:21,750 --> 00:01:23,405
+space-time A* for its route,
+
+32
+00:01:23,425 --> 00:01:27,547
+and Guided-PIBT, priority inheritance with backtracking, for each step.
+
+33
+00:01:28,025 --> 00:01:30,512
+Every round, each robot broadcasts a Hello:
+
+34
+00:01:30,532 --> 00:01:35,876
+its position, the node it claims next, its priority, battery, and which peers it heard.
+
+35
+00:01:35,896 --> 00:01:37,727
+An Intent carries its next ten path nodes.
+
+36
+00:01:37,747 --> 00:01:40,834
+Every packet is signed with HMAC-SHA256
+
+37
+00:01:40,854 --> 00:01:43,330
+and checked against an anti-replay window,
+
+38
+00:01:43,350 --> 00:01:48,147
+and robots relay each other's messages up to two hops, across dead zones.
+
+39
+00:01:48,625 --> 00:01:51,086
+Motion uses a discrete-time kinematic model:
+
+40
+00:01:51,106 --> 00:01:53,963
+one metre per second on a one-metre roadmap.
+
+41
+00:01:53,983 --> 00:01:57,385
+Each one-second tick has a claim round and a move round.
+
+42
+00:01:57,405 --> 00:01:59,891
+A robot enters a node only if it claimed it,
+
+43
+00:01:59,911 --> 00:02:01,759
+every peer acknowledged hearing it,
+
+44
+00:02:01,779 --> 00:02:04,929
+and no peer's position, claim or reach set conflicts.
+
+45
+00:02:04,949 --> 00:02:08,680
+So a lost packet can only cause a wait, never a collision.
+
+46
+00:02:09,158 --> 00:02:14,351
+Across 11 scenarios, 30 seeds each, SANCHAR had zero collisions in all 330 runs.
+
+47
+00:02:14,371 --> 00:02:16,825
+Measured with 95% confidence intervals,
+
+48
+00:02:16,845 --> 00:02:20,932
+six robots on overlapping paths finish 25% faster than stop-and-wait,
+
+49
+00:02:20,952 --> 00:02:24,171
+twelve robots 56%, and live orders 43%.
+
+50
+00:02:24,191 --> 00:02:27,355
+At a single-lane intersection, stop-and-wait gridlocked every time.
+
+51
+00:02:27,375 --> 00:02:29,637
+Our weak case: an isolated two-way chokepoint,
+
+52
+00:02:29,657 --> 00:02:32,447
+where central zone control is 16% faster.
+
+53
+00:02:32,925 --> 00:02:36,927
+We also run one process per robot over real UDP and kill one mid-run:
+
+54
+00:02:36,947 --> 00:02:39,190
+the rest still deliver every order.
+
+55
+00:02:39,210 --> 00:02:41,983
+Each decision takes under 2 milliseconds on a laptop,
+
+56
+00:02:42,003 --> 00:02:45,518
+with 2 to 5 kilobytes of radio traffic per robot per second.
+
+57
+00:02:45,538 --> 00:02:48,985
+Next, at the finale: continuous velocity and acceleration profiles,
+
+58
+00:02:49,005 --> 00:02:53,021
+direction batching at choke points, and tests on Raspberry Pi hardware.
+
+59
+00:02:53,041 --> 00:02:57,680
+SANCHAR: a fleet that keeps moving when the network dies.

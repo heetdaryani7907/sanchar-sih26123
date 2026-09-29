@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Motion model and safety rule</title>
+<link rel="stylesheet" href="video.css">
+<style>
+  .kin { position: absolute; left: 40px; top: 146px; width: 580px; }
+  .rule { position: absolute; left: 650px; top: 146px; width: 590px; }
+  .kin .big { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+  .check { display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: start; padding: 9px 10px;
+    border: 1px solid var(--line); border-radius: 10px; margin-top: 8px; font-size: 18px; }
+  .check .ic { width: 28px; height: 28px; border-radius: 50%; background: var(--good); color: #0b1a10; font-weight: 900;
+    display: grid; place-items: center; font-size: 17px; }
+  .lost { margin-top: 12px; font-size: 20px; font-weight: 700; }
+  .lost span { color: var(--good); }
+  .foot { position: absolute; left: 40px; top: 486px; width: 560px; font-size: 16px; color: var(--muted);
+    border-left: 3px solid var(--kw); padding-left: 12px; }
+  svg text { font-family: "Segoe UI", system-ui, sans-serif; }
+</style></head>
+<body class="slide">
+<div class="top"><span class="brand">SANCHAR</span><span class="ps">SIH26123 · Bharat Electronics Limited</span><span class="sp"></span><span class="tagpill" data-bind="tag"></span></div>
+<h1 class="fx" data-at="t:0">Motion model and the safety rule<small>Claim before move: a lost packet can only cause a wait</small></h1>
+
+<div class="kin card fx" data-at="kw:discrete-time kinematic model@-0.3">
+  <div class="big">Discrete-time kinematic model</div>
+  <div class="muted" style="font-size:16px">1 m roadmap · v = 1 m/s · one node per 1 s tick</div>
+  <svg viewBox="0 0 540 130" style="width:100%;height:130px;margin-top:6px">
+    <g id="strip"></g>
+    <g font-size="14" fill="#9aa3b2" text-anchor="middle">
+      <line x1="45" y1="104" x2="135" y2="104" stroke="#9aa3b2"/><line x1="45" y1="98" x2="45" y2="110" stroke="#9aa3b2"/>
+      <line x1="135" y1="98" x2="135" y2="110" stroke="#9aa3b2"/><text x="90" y="124">1 m</text>
+    </g>
+    <g id="rob"><circle r="22" fill="#2563eb"/><text y="6" text-anchor="middle" fill="#fff" font-size="17" font-weight="700">A</text></g>
+    <text id="vlab" x="0" y="20" text-anchor="middle" fill="#fcd34d" font-size="15" font-weight="700">1 m/s</text>
+  </svg>
+  <svg viewBox="0 0 540 92" style="width:100%;height:92px;margin-top:4px">
+    <g id="tl"></g>
+    <line id="ph" x1="0" y1="8" x2="0" y2="62" stroke="#fcd34d" stroke-width="3"/>
+  </svg>
+</div>
+
+<div class="rule card fx" data-at="w:enters@-0.3">
+  <h3>Safety rule: robot A enters node m only if</h3>
+  <div class="check fx" data-at="w:claimed"><div class="ic">✓</div><div>A claimed m in the previous round</div></div>
+  <div class="check fx" data-at="kw:acknowledged"><div class="ic">✓</div><div>every peer has acknowledged hearing A recently</div></div>
+  <div class="check fx" data-at="kw:reach set"><div class="ic">✓</div><div>no fresh peer is at m or claims m, and m is outside every stale peer's <b>reach set</b></div></div>
+  <svg class="fade" data-at="kw:reach set@0.4" viewBox="0 0 560 104" style="width:100%;height:104px;margin-top:8px" id="reach"></svg>
+  <div class="lost fx" data-at="w:lost">Lost packet ⇒ <span>wait</span>, never collide</div>
+  <div class="fx" data-at="w:lost@0.5" style="font-size:16px;color:var(--muted);margin-top:2px">= collision avoidance by construction</div>
+</div>
+<div class="foot fade" data-at="end:-4">Continuous velocity and acceleration profiles for differential-drive robots are the Grand Finale step, under this same rule.
+  <div style="margin-top:4px">…with real robot footprints and safety margins.</div></div>
+<script src="video.js"></script>
+<script>
+let TC = 1e9, TM = 1e9;
+window.onInit = function () {
+  let s = "";
+  for (let i = 0; i < 6; i++) {
+    const x = 45 + i * 90;
+    if (i) s += `<line x1="${x - 90}" y1="62" x2="${x}" y2="62" stroke="#2b3342" stroke-width="10"/>`;
+    s += `<rect x="${x - 26}" y="36" width="52" height="52" rx="8" fill="#1f2a3a" stroke="#2b3342"/>`;
+  }
+  document.getElementById("strip").innerHTML = s;
+  let tl = "";
+  for (let k = 0; k < 4; k++) {
+    const x = 10 + k * 130;
+    tl += `<rect class="cr" x="${x}" y="14" width="63" height="42" rx="6" fill="#1c222b" stroke="#2b3342"/>`;
+    tl += `<rect class="mr" x="${x + 65}" y="14" width="63" height="42" rx="6" fill="#1c222b" stroke="#2b3342"/>`;
+    tl += `<text x="${x + 31}" y="40" text-anchor="middle" fill="#9aa3b2" font-size="13" font-weight="600">claim</text>`;
+    tl += `<text x="${x + 96}" y="40" text-anchor="middle" fill="#9aa3b2" font-size="13" font-weight="600">move</text>`;
+    tl += `<text x="${x}" y="82" fill="#9aa3b2" font-size="13">tick ${k}</text>`;
+  }
+  document.getElementById("tl").innerHTML = tl;
+  // reach set: stale peer B at centre of a 11x3 strip, ball of radius 2
+  let r = "";
+  for (let y = 0; y < 3; y++) for (let x = 0; x < 11; x++) {
+    const d = Math.abs(x - 5) + Math.abs(y - 1), inBall = d <= 2;
+    r += `<rect x="${10 + x * 40}" y="${6 + y * 30}" width="36" height="26" rx="4" fill="${inBall ? "rgba(248,113,113,.28)" : "#1c222b"}" stroke="${inBall ? "#f87171" : "#2b3342"}"/>`;
+  }
+  r += `<circle cx="${10 + 5 * 40 + 18}" cy="${6 + 30 + 13}" r="11" fill="#6b7280"/><text x="${10 + 5 * 40 + 18}" y="${6 + 30 + 18}" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">B</text>`;
+  r += `<text x="470" y="40" fill="#e8eaee" font-size="14" font-weight="600">reach(B)</text><text x="470" y="60" fill="#9aa3b2" font-size="13">where silent B</text><text x="470" y="77" fill="#9aa3b2" font-size="13">could be now</text>`;
+  document.getElementById("reach").innerHTML = r;
+};
+window.onFrame = function (t) {
+  if (TC > 1e8) { TC = V.when("kw:claim round"); TM = V.when("kw:move round"); }
+  const u = t % 5, x = 45 + u * 90;                     // 1 node per second, loop over 5 m
+  document.getElementById("rob").setAttribute("transform", `translate(${x.toFixed(1)},62)`);
+  document.getElementById("vlab").setAttribute("x", x.toFixed(1));
+  const ph = 10 + (t % 4) * 130;
+  const phl = document.getElementById("ph");
+  phl.setAttribute("x1", ph.toFixed(1)); phl.setAttribute("x2", ph.toFixed(1));
+  const hc = t >= TC, hm = t >= TM;
+  document.querySelectorAll("#tl .cr").forEach((e) => { e.setAttribute("fill", hc ? "rgba(96,165,250,.28)" : "#1c222b"); e.setAttribute("stroke", hc ? "#60a5fa" : "#2b3342"); });
+  document.querySelectorAll("#tl .mr").forEach((e) => { e.setAttribute("fill", hm ? "rgba(34,197,94,.24)" : "#1c222b"); e.setAttribute("stroke", hm ? "#22c55e" : "#2b3342"); });
+  return x.toFixed(0) + ph.toFixed(0) + hc + hm;
+};
+</script>
+</body></html>

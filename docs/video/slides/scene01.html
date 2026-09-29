@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>SANCHAR title</title>
+<link rel="stylesheet" href="video.css">
+<style>
+  #bg { position: absolute; inset: 0; opacity: .45; }
+  #vig { position: absolute; inset: 0; background: radial-gradient(ellipse 58% 46% at 50% 44%, rgba(14, 17, 22, .94) 40%, rgba(14, 17, 22, .25) 100%); }
+  .hero { position: absolute; left: 0; right: 0; top: 118px; text-align: center; }
+  .hero .word { font-size: 124px; font-weight: 800; letter-spacing: .08em; line-height: 1.05; margin: 0;
+    background: linear-gradient(180deg, #ffffff, #b9d4ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .sub { font-size: 30px; font-weight: 600; margin-top: 18px; }
+  .meta { margin-top: 26px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .meta .chip { font-size: 16px; font-weight: 500; color: var(--muted); background: rgba(22, 26, 33, .9); }
+  .pst { margin-top: 12px; }
+  .pst .chip { font-size: 17px; font-weight: 600; color: var(--ink); background: rgba(96, 165, 250, .14); border-color: rgba(96, 165, 250, .55); }
+  .team { margin-top: 18px; font-size: 20px; color: var(--ink); font-weight: 600; }
+  .team:empty { display: none; }
+  .nos { margin-top: 30px; display: flex; gap: 16px; justify-content: center; }
+  .nos .chip { font-size: 22px; padding: 9px 20px; border-color: rgba(248, 113, 113, .6); background: rgba(248, 113, 113, .1); }
+  .nos .chip::before { content: "✕ "; color: var(--bad); }
+</style></head>
+<body class="slide">
+<svg id="bg" viewBox="0 0 1280 720" preserveAspectRatio="xMidYMid slice"></svg>
+<div id="vig"></div>
+<div class="hero">
+  <div class="fade" data-at="t:0" data-dur="0.8"><div class="word">SANCHAR</div></div>
+  <div class="sub fx" data-at="t:0.35">A masterless AMR fleet that keeps moving when the network dies</div>
+  <div class="meta fx" data-at="kw:SIH26123@-0.3">
+    <span class="chip">Smart India Hackathon 2026</span><span class="chip">Problem statement SIH26123</span>
+    <span class="chip">Bharat Electronics Limited</span><span class="chip">Smart Automation</span>
+  </div>
+  <div class="pst fx" data-at="kw:SIH26123@0.3"><span class="chip">Edge-AI Based Distributed Fleet Coordination for AMRs in Smart Warehouses</span></div>
+  <div class="team fx" data-at="t:0.6" data-bind="team_line"></div>
+  <div class="nos">
+    <span class="chip fx" data-at="w:server">No server</span>
+    <span class="chip fx" data-at="w:leader">No leader</span>
+    <span class="chip fx" data-at="w:broker">No broker</span>
+    <span class="chip fx" data-at="w:broker@0.4">No cloud</span>
+  </div>
+</div>
+<script src="video.js"></script>
+<script>
+// Faint warehouse roadmap with robots circulating on it (one cell per 0.5 s), driven by t.
+const LAYOUT = ["######################", "#S....S....S....S...S#", "#....................#", "#.####.####.####.###.#",
+  "#.####.####.####.###.#", "#....................#", "#.####.####.####.###.#", "#.####.####.####.###.#",
+  "#....................#", "#S....S....S....S..CS#", "######################"];
+const C = 58, OX = (1280 - 22 * C) / 2, OY = (720 - 11 * C) / 2;
+const COL = ["#2563eb", "#db2777", "#16a34a", "#ea580c", "#7c3aed", "#0891b2"];
+function loop(x0, y0, x1, y1) {           // rectangular circuit through cell centres
+  const p = [];
+  for (let x = x0; x < x1; x++) p.push([x, y0]);
+  for (let y = y0; y < y1; y++) p.push([x1, y]);
+  for (let x = x1; x > x0; x--) p.push([x, y1]);
+  for (let y = y1; y > y0; y--) p.push([x0, y]);
+  return p;
+}
+const LOOPS = [[loop(1, 1, 6, 5), 0], [loop(6, 5, 11, 8), 3], [loop(11, 1, 16, 5), 7], [loop(16, 5, 20, 8), 2],
+  [loop(1, 5, 6, 8), 9], [loop(11, 5, 16, 8), 5]];
+window.onInit = function () {
+  const bg = document.getElementById("bg");
+  let s = "";
+  LAYOUT.forEach((row, y) => [...row].forEach((ch, x) => {
+    if (ch === "#") return;
+    const fill = ch === "S" ? "#123b3a" : ch === "C" ? "#3a2a0d" : "#1c222b";
+    s += `<rect x="${OX + x * C + 2}" y="${OY + y * C + 2}" width="${C - 4}" height="${C - 4}" rx="6" fill="${fill}"/>`;
+  }));
+  LOOPS.forEach((_, i) => { s += `<circle id="rb${i}" r="${C * 0.3}" fill="${COL[i]}"/>`; });
+  bg.innerHTML = s;
+};
+window.onFrame = function (t) {
+  const out = [];
+  LOOPS.forEach(([path, off], i) => {
+    const u = t * 2 + off, k = Math.floor(u), f = u - k;
+    const a = path[k % path.length], b = path[(k + 1) % path.length];
+    const x = OX + (a[0] + (b[0] - a[0]) * f + 0.5) * C, y = OY + (a[1] + (b[1] - a[1]) * f + 0.5) * C;
+    const el = document.getElementById("rb" + i);
+    el.setAttribute("cx", x.toFixed(1)); el.setAttribute("cy", y.toFixed(1));
+    out.push(x.toFixed(0));
+  });
+  return out.join(",");
+};
+</script>
+</body></html>

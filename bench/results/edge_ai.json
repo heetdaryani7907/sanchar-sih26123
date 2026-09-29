@@ -1,0 +1,58 @@
+{
+ "train_legs": 8510,
+ "test_legs": 5625,
+ "mae_path_length": 3.7701333333333333,
+ "mae_model": 3.379535977357743,
+ "ab": {
+  "market_warehouse": {
+   "makespan_change_pct": -0.8798188578940399,
+   "latency_change_pct": 0.07516733240357844,
+   "seeds_better_makespan": 6,
+   "seeds": 20,
+   "collisions": 0,
+   "unfinished": 0
+  },
+  "market_12": {
+   "makespan_change_pct": 4.647077411252539,
+   "latency_change_pct": 2.837858013564485,
+   "seeds_better_makespan": 14,
+   "seeds": 20,
+   "collisions": 0,
+   "unfinished": 0
+  },
+  "market_blocked": {
+   "makespan_change_pct": 1.0456941196441192,
+   "latency_change_pct": 3.712536349297589,
+   "seeds_better_makespan": 15,
+   "seeds": 20,
+   "collisions": 0,
+   "unfinished": 0
+  },
+  "market_loss30": {
+   "makespan_change_pct": 2.5072265769034563,
+   "latency_change_pct": 1.0473617862518427,
+   "seeds_better_makespan": 13,
+   "seeds": 20,
+   "collisions": 0,
+   "unfinished": 0
+  },
+  "market_crash": {
+   "makespan_change_pct": 0.7918484455120348,
+   "latency_change_pct": 0.3275410830215083,
+   "seeds_better_makespan": 7,
+   "seeds": 20,
+   "collisions": 0,
+   "unfinished": 0
+  }
+ },
+ "weights": {
+  "path_len": 1.0521818337773945,
+  "corridor_nodes": 0.25924366230691764,
+  "peers_near_path": 0.09960200692206272,
+  "peers_near_start": 0.5286844066249434,
+  "peers_near_goal": 0.8948803092438203,
+  "plan_overlap": 0.19776889809711168,
+  "opposing_in_corridors": 0.7581766759698374,
+  "bias": -0.19222725555881903
+ }
+}

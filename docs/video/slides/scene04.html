@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Peer-to-peer protocol</title>
+<link rel="stylesheet" href="video.css">
+<style>
+  .msgs { position: absolute; left: 40px; top: 146px; width: 560px; display: flex; flex-direction: column; gap: 12px; }
+  .fields { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .f { border: 1px solid var(--line); border-radius: 9px; padding: 7px 8px; text-align: center; }
+  .f .k { font-weight: 700; font-size: 16px; }
+  .f .v { font-size: 13px; color: var(--muted); }
+  .mname { font-size: 22px; font-weight: 800; }
+  .mname small { font-size: 15px; font-weight: 500; color: var(--muted); margin-left: 8px; }
+  .env { position: absolute; left: 640px; top: 146px; width: 600px; }
+  .env .fields { grid-template-columns: repeat(7, 1fr); }
+  .note { margin-top: 10px; font-size: 15px; color: var(--ink); min-height: 22px; }
+  .note b { color: var(--kw); }
+  .relay { position: absolute; left: 640px; top: 372px; width: 600px; }
+  svg text { font-family: "Segoe UI", system-ui, sans-serif; }
+  .others { margin-top: 2px; }
+  .others .chip { font-size: 14px; margin: 4px 4px 0 0; font-weight: 500; }
+  .stackpill { position: absolute; left: 600px; top: 72px; }
+</style></head>
+<body class="slide">
+<div class="top"><span class="brand">SANCHAR</span><span class="ps">SIH26123 · Bharat Electronics Limited</span><span class="sp"></span><span class="tagpill" data-bind="tag"></span></div>
+<h1 class="fx" data-at="t:0">Peer-to-peer radio protocol<small>Robots share position and intent directly. There is no server and no broker.</small></h1>
+<div class="stackpill fx" data-at="t:0.4"><span class="tagpill">Decentralized network stack</span></div>
+
+<div class="msgs">
+  <div class="card fx" data-at="kw:Hello@-0.2">
+    <div class="mname">Hello <small>every radio round (2 per 1 s tick; 10 Hz on hardware)</small></div>
+    <div class="fields" style="margin-top:10px">
+      <div class="f lit" data-at="w:position" data-until="kw:Intent@2"><div class="k nm">node</div><div class="v">position</div></div>
+      <div class="f lit" data-at="w:claims" data-until="kw:Intent@2"><div class="k nm">claim</div><div class="v">next node</div></div>
+      <div class="f lit" data-at="w:priority" data-until="kw:Intent@2"><div class="k nm">priority</div><div class="v">total order</div></div>
+      <div class="f lit" data-at="w:battery" data-until="kw:Intent@2"><div class="k nm">battery</div><div class="v">state of charge</div></div>
+      <div class="f lit" data-at="w:heard" data-until="kw:Intent@2"><div class="k nm">heard</div><div class="v">acknowledgements</div></div>
+    </div>
+  </div>
+  <div class="card fx" data-at="kw:Intent@-0.1">
+    <div class="mname">Intent <small>next 10 nodes of the planned path</small></div>
+    <svg viewBox="0 8 520 44" style="width:100%;height:44px;margin-top:2px">
+      <g id="ipath"></g>
+    </svg>
+    <div class="muted fx" data-at="kw:Intent@0.6" style="font-size:14px">Intent messages let peers plan around each other</div>
+  </div>
+  <div class="card fx others" data-at="kw:Intent@0.8">
+    <div class="mname" style="font-size:17px">Also on the air</div>
+    <span class="chip">Seen: sightings of silent robots</span><span class="chip">ObstacleDelta: blocked cells</span>
+    <span class="chip">Bid / TaskAnnounce: order market</span><span class="chip">Bye</span>
+  </div>
+</div>
+
+<div class="env card fx" data-at="kw:HMAC-SHA256@-0.3">
+  <h3>Every packet is an envelope</h3>
+  <div class="fields">
+    <div class="f"><div class="k">ver</div></div><div class="f"><div class="k">sender</div></div>
+    <div class="f lit" data-at="kw:anti-replay window"><div class="k nm">seq</div></div>
+    <div class="f"><div class="k">hlc</div></div><div class="f"><div class="k">hops</div></div>
+    <div class="f"><div class="k">body</div></div>
+    <div class="f lit" data-at="kw:HMAC-SHA256"><div class="k nm">sig</div></div>
+  </div>
+  <div class="note fx" data-at="kw:HMAC-SHA256"><b>sig</b>: HMAC-SHA256 with the fleet key (Ed25519 per robot in production)</div>
+  <div class="note fx" data-at="kw:anti-replay window" style="margin-top:4px"><b>seq</b>: per-sender anti-replay window drops replays and duplicate relays</div>
+  <div class="note fx" data-at="kw:anti-replay window@0.5" style="margin-top:4px;color:var(--muted)">msgspec binary encoding · per-sender sequence numbers</div>
+  <div class="note fx" data-at="kw:anti-replay window@0.9" style="margin-top:2px;color:var(--muted)">ObstacleDelta = cooperative perception · TaskAnnounce anti-entropy re-gossip</div>
+</div>
+
+<div class="relay card fx" data-at="kw:relay@-0.2">
+  <h3>Multi-hop relay across a Wi-Fi dead zone</h3>
+  <svg viewBox="0 0 560 160" style="width:100%;height:160px">
+    <rect x="370" y="18" width="170" height="130" rx="14" fill="rgba(167,139,250,.22)" stroke="#a78bfa" stroke-dasharray="6 5"/>
+    <text x="455" y="142" text-anchor="middle" fill="#c4b5fd" font-size="14" font-weight="600">no Wi-Fi</text>
+    <line x1="70" y1="80" x2="270" y2="80" stroke="#3b4454" stroke-width="3"/>
+    <line x1="270" y1="80" x2="455" y2="80" stroke="#3b4454" stroke-width="3"/>
+    <g font-size="18" font-weight="700" text-anchor="middle" fill="#fff">
+      <circle cx="70" cy="80" r="24" fill="#2563eb"/><text x="70" y="86">A</text>
+      <circle cx="270" cy="80" r="24" fill="#16a34a"/><text x="270" y="86">B</text>
+      <circle cx="455" cy="80" r="24" fill="#ea580c"/><text x="455" y="86">C</text>
+    </g>
+    <g class="fade" data-at="kw:two hops" font-size="15" font-weight="700" fill="#fcd34d" text-anchor="middle">
+      <text x="170" y="62">hop 1</text><text x="362" y="62">hop 2</text>
+    </g>
+    <circle id="pkt" r="9" fill="#fcd34d" opacity="0"/>
+  </svg>
+</div>
+<script src="video.js"></script>
+<script>
+let T_RELAY = 1e9;
+window.onInit = function () {
+  let s = "";
+  for (let i = 0; i < 10; i++) {
+    const x = 20 + i * 52, y = 30 + (i < 5 ? 0 : 0);
+    if (i) s += `<line x1="${x - 52}" y1="${y}" x2="${x}" y2="${y}" stroke="#2563eb" stroke-width="4" opacity=".5"/>`;
+    s += `<circle cx="${x}" cy="${y}" r="9" fill="${i ? "#1c222b" : "#2563eb"}" stroke="#2563eb" stroke-width="2.5"/>`;
+  }
+  document.getElementById("ipath").innerHTML = s;
+};
+window.onFrame = function (t) {
+  if (T_RELAY > 1e8) T_RELAY = V.when("kw:relay");
+  const pk = document.getElementById("pkt");
+  const u = (t - T_RELAY) / 1.6;               // A -> B -> C in 1.6 s, repeated twice
+  if (u < 0 || u > 2) { pk.setAttribute("opacity", 0); return "x"; }
+  const f = u % 1, x = f < 0.5 ? 70 + (270 - 70) * (f / 0.5) : 270 + (455 - 270) * ((f - 0.5) / 0.5);
+  pk.setAttribute("opacity", 1); pk.setAttribute("cx", x.toFixed(1)); pk.setAttribute("cy", 80);
+  return x.toFixed(0);
+};
+</script>
+</body></html>

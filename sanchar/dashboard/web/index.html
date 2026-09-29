@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SANCHAR Fleet Monitor</title>
+<style>
+:root {
+  --bg: #f4f5f7; --panel: #ffffff; --ink: #16181d; --muted: #5d6470; --line: #dde1e7;
+  --wall: #2b2f36; --floor: #eef0f3; --lane: #dfe8f5; --pocket: #e9e1f5; --station: #0f766e;
+  --charger: #b45309; --good: #15803d; --bad: #b91c1c; --warn: #b45309; --accent: #1d4ed8;
+  --dz: rgba(124, 58, 237, 0.20); --block: #b91c1c; --chip: #eef1f6;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1116; --panel: #161a21; --ink: #e8eaee; --muted: #9aa3b2; --line: #262c36;
+    --wall: #05070a; --floor: #1c222b; --lane: #1f2a3a; --pocket: #2a2238; --station: #2dd4bf;
+    --charger: #f59e0b; --good: #22c55e; --bad: #f87171; --warn: #fbbf24; --accent: #60a5fa;
+    --dz: rgba(167, 139, 250, 0.22); --block: #f87171; --chip: #1f2530;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1116; --panel: #161a21; --ink: #e8eaee; --muted: #9aa3b2; --line: #262c36;
+  --wall: #05070a; --floor: #1c222b; --lane: #1f2a3a; --pocket: #2a2238; --station: #2dd4bf;
+  --charger: #f59e0b; --good: #22c55e; --bad: #f87171; --warn: #fbbf24; --accent: #60a5fa;
+  --dz: rgba(167, 139, 250, 0.22); --block: #f87171; --chip: #1f2530;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 14px/1.4 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 12px 16px;
+  border-bottom: 1px solid var(--line); background: var(--panel); }
+.brand { font-weight: 700; font-size: 18px; letter-spacing: .02em; }
+.brand small { display: block; font-weight: 400; font-size: 12px; color: var(--muted); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg button { border: 0; background: transparent; color: var(--ink); padding: 6px 12px; cursor: pointer; font: inherit; }
+.seg button.on { background: var(--accent); color: #fff; }
+.clock { font-variant-numeric: tabular-nums; color: var(--muted); }
+.spacer { flex: 1; }
+button.btn { border: 1px solid var(--line); background: var(--chip); color: var(--ink); border-radius: 8px;
+  padding: 6px 10px; cursor: pointer; font: inherit; }
+button.btn:hover { border-color: var(--accent); }
+button.btn.danger { color: var(--bad); }
+main { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 16px; padding: 16px; }
+@media (max-width: 980px) { main { grid-template-columns: 1fr; } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+.card h2 { margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+#map { width: 100%; display: block; cursor: crosshair; border-radius: 8px; }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+.tools label { color: var(--muted); font-size: 13px; }
+.kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.kpi { background: var(--chip); border-radius: 10px; padding: 8px 10px; }
+.kpi .v { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.kpi .l { font-size: 12px; color: var(--muted); }
+.kpi.hero .v { color: var(--good); }
+.kpi.hero.bad .v { color: var(--bad); }
+.robots { display: flex; flex-direction: column; gap: 6px; max-height: 300px; overflow: auto; }
+.robot { display: grid; grid-template-columns: 14px 34px 1fr 64px; gap: 8px; align-items: center; font-size: 13px; }
+.dot { width: 12px; height: 12px; border-radius: 50%; }
+.bat { height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.bat i { display: block; height: 100%; }
+.why { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tag { font-size: 11px; padding: 1px 6px; border-radius: 6px; background: var(--chip); color: var(--muted); }
+.events { font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; max-height: 260px; overflow: auto; }
+.events div { border-bottom: 1px dashed var(--line); padding: 2px 0; }
+.events b { font-weight: 600; }
+.legend { display: flex; flex-wrap: wrap; gap: 10px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px;
+  margin-right: 5px; vertical-align: -1px; background: var(--c); }
+.side { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+input[type=range] { vertical-align: middle; }
+.note { font-size: 12px; color: var(--muted); margin-top: 6px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">SANCHAR <small>Masterless AMR fleet · SIH26123 · Bharat Electronics Limited</small></div>
+  <div class="seg" id="policy">
+    <button data-p="sanchar" class="on">SANCHAR (peer-to-peer)</button>
+    <button data-p="stop_and_wait">Stop-and-wait (central)</button>
+  </div>
+  <span class="clock" id="clock">t = 0 s</span>
+  <div class="spacer"></div>
+  <label class="clock">speed <input id="speed" type="range" min="1" max="12" value="4"></label>
+  <button class="btn" id="pause">Pause</button>
+  <button class="btn" id="reset">Reset</button>
+  <button class="btn" id="theme" title="Toggle theme">◐</button>
+</header>
+<main>
+  <section class="card">
+    <h2>Warehouse floor (as heard over the robots' own radio)</h2>
+    <canvas id="map" width="1100" height="560" aria-label="Warehouse map with robots"></canvas>
+    <div class="tools">
+      <div class="seg" id="tool">
+        <button data-t="inspect" class="on">Inspect</button>
+        <button data-t="block">Drop pallet</button>
+        <button data-t="deadzone">Wi-Fi dead zone</button>
+      </div>
+      <button class="btn danger" id="kill">Kill a robot</button>
+      <button class="btn" id="split">Split network</button>
+      <button class="btn" id="burst">Order burst</button>
+      <button class="btn" id="clear">Clear chaos</button>
+      <label>packet loss <input id="loss" type="range" min="0" max="70" value="0"> <span id="lossv">0%</span></label>
+    </div>
+    <div class="legend">
+      <span style="--c: var(--lane)">single-lane corridor</span>
+      <span style="--c: var(--pocket)">lay-by pocket</span>
+      <span style="--c: var(--station)">station</span>
+      <span style="--c: var(--charger)">charger</span>
+      <span style="--c: var(--block)">blocked</span>
+      <span style="--c: var(--dz)">Wi-Fi dead zone</span>
+    </div>
+    <div class="note">Robot rings show battery. Lines are each robot's broadcast plan. A dashed outline means the listener has not heard that robot recently.</div>
+  </section>
+  <aside class="side">
+    <section class="card">
+      <h2>Fleet health</h2>
+      <div class="kpis" id="kpis"></div>
+    </section>
+    <section class="card">
+      <h2>Robots</h2>
+      <div class="robots" id="robots"></div>
+    </section>
+    <section class="card">
+      <h2>Decisions and events</h2>
+      <div class="events" id="events"></div>
+    </section>
+  </aside>
+</main>
+<script>
+const COLORS = ["#2563eb", "#db2777", "#16a34a", "#ea580c", "#7c3aed", "#0891b2", "#ca8a04", "#dc2626",
+                "#4f46e5", "#059669", "#c026d3", "#65a30d"];
+const $ = (id) => document.getElementById(id);
+const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+let layout = null, byId = {}, state = null, prevPos = {}, curPos = {}, lastT = 0, tool = "inspect";
+let tickMs = 250, cell = 20, ox = 0, oy = 0;
+
+async function post(path, body) {
+  await fetch(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+}
+async function loadLayout() {
+  layout = await (await fetch("/api/layout")).json();
+  byId = {}; for (const n of layout.nodes) byId[n.id] = n;
+  resize();
+}
+function resize() {
+  const cv = $("map"); const w = cv.clientWidth; const dpr = window.devicePixelRatio || 1;
+  if (!layout) return;
+  cell = Math.floor(w / layout.w);
+  const h = cell * layout.h;
+  cv.width = w * dpr; cv.height = h * dpr; cv.style.height = h + "px";
+  cv.getContext("2d").setTransform(dpr, 0, 0, dpr, 0, 0);
+  ox = Math.floor((w - cell * layout.w) / 2); oy = 0;
+}
+window.addEventListener("resize", resize);
+
+function nodeXY(id) { const n = byId[id]; return n ? [ox + (n.x + 0.5) * cell, oy + (n.y + 0.5) * cell] : [0, 0]; }
+
+function drawFloor(ctx) {
+  ctx.fillStyle = css("--wall"); ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  const blocked = new Set(state ? state.obstacles : []), dz = new Set(state ? state.dead_zone : []);
+  for (const n of layout.nodes) {
+    const x = ox + n.x * cell, y = oy + n.y * cell;
+    ctx.fillStyle = n.kind === "turnout" ? css("--pocket") : (n.corridor !== null ? css("--lane") : css("--floor"));
+    ctx.fillRect(x + 1, y + 1, cell - 2, cell - 2);
+    if (n.kind === "station" || n.kind === "charger") {
+      ctx.strokeStyle = n.kind === "station" ? css("--station") : css("--charger");
+      ctx.lineWidth = 2; ctx.strokeRect(x + 3, y + 3, cell - 6, cell - 6);
+      if (n.kind === "charger") { ctx.fillStyle = css("--charger"); ctx.font = `${cell * 0.5}px sans-serif`;
+        ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("⚡", x + cell / 2, y + cell / 2); }
+    }
+    if (dz.has(n.id)) { ctx.fillStyle = css("--dz"); ctx.fillRect(x, y, cell, cell); }
+    if (blocked.has(n.id)) {
+      ctx.strokeStyle = css("--block"); ctx.lineWidth = 3; ctx.beginPath();
+      ctx.moveTo(x + 5, y + 5); ctx.lineTo(x + cell - 5, y + cell - 5);
+      ctx.moveTo(x + cell - 5, y + 5); ctx.lineTo(x + 5, y + cell - 5); ctx.stroke();
+    }
+  }
+}
+
+function drawRobots(ctx, alpha) {
+  if (!state) return;
+  for (const r of state.robots) {
+    const col = COLORS[r.id % COLORS.length];
+    if (r.alive && r.intent && r.intent.length > 1) {
+      ctx.strokeStyle = col; ctx.globalAlpha = 0.35; ctx.lineWidth = Math.max(2, cell * 0.12);
+      ctx.beginPath(); const [sx, sy] = nodeXY(r.intent[0]); ctx.moveTo(sx, sy);
+      for (const n of r.intent.slice(1)) { const [x, y] = nodeXY(n); ctx.lineTo(x, y); }
+      ctx.stroke(); ctx.globalAlpha = 1;
+    }
+  }
+  for (const r of state.robots) {
+    const col = COLORS[r.id % COLORS.length];
+    const a = prevPos[r.id] ?? r.node, b = curPos[r.id] ?? r.node;
+    const [ax, ay] = nodeXY(a), [bx, by] = nodeXY(b);
+    const x = ax + (bx - ax) * alpha, y = ay + (by - ay) * alpha, rad = cell * 0.36;
+    ctx.beginPath(); ctx.arc(x, y, rad + 3, -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI * r.battery);
+    ctx.strokeStyle = r.battery < 0.2 ? css("--bad") : (r.battery < 0.4 ? css("--warn") : css("--good"));
+    ctx.lineWidth = 3; ctx.stroke();
+    ctx.beginPath(); ctx.arc(x, y, rad, 0, 2 * Math.PI);
+    ctx.fillStyle = r.alive ? col : "#6b7280"; ctx.fill();
+    if (r.last_heard > 2 || r.in_dead_zone || r.degraded) {
+      ctx.setLineDash([3, 3]); ctx.strokeStyle = css("--ink"); ctx.lineWidth = 1.5; ctx.stroke(); ctx.setLineDash([]);
+    }
+    if (r.load) { ctx.fillStyle = "#fff"; ctx.fillRect(x - rad * 0.35, y + rad * 0.15, rad * 0.7, rad * 0.45); }
+    ctx.fillStyle = "#fff"; ctx.font = `600 ${Math.max(9, cell * 0.34)}px ui-sans-serif, system-ui`;
+    ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(r.alive ? r.id : "✕", x, y - (r.load ? rad * 0.2 : 0));
+  }
+}
+
+function frame() {
+  const cv = $("map"), ctx = cv.getContext("2d");
+  if (layout && (!cell || cv.width < 10)) resize();
+  if (layout && cell) {
+    const alpha = Math.min(1, (performance.now() - lastT) / tickMs);
+    drawFloor(ctx); drawRobots(ctx, alpha);
+  }
+  requestAnimationFrame(frame);
+}
+
+function kpi(label, value, cls = "") { return `<div class="kpi ${cls}"><div class="v">${value}</div><div class="l">${label}</div></div>`; }
+function render(s) {
+  $("clock").textContent = `t = ${s.t} s · ${s.robots.length} robots · ${s.policy === "sanchar" ? "no server" : "central server"}`;
+  const k = s.kpi;
+  $("kpis").innerHTML =
+    kpi("inter-robot collisions", k.collisions, "hero" + (k.collisions ? " bad" : "")) +
+    kpi("orders done / open", `${k.done} / ${k.open}`) +
+    kpi("orders per minute (last 60 s)", k.throughput_per_min) +
+    kpi("mean order latency", k.mean_latency === null ? "–" : `${k.mean_latency} s`) +
+    kpi("radio packets per second", k.packets_per_tick) +
+    kpi("bytes per robot per second", k.bytes_per_robot_tick) +
+    kpi("decision time p99", `${k.decision_ms_p99} ms`) +
+    kpi("orders re-assigned", k.reassigned) +
+    kpi("robots alive", k.robots_alive) +
+    kpi("packet loss", `${Math.round(s.loss * 100)}%`);
+  $("robots").innerHTML = s.robots.map(r => {
+    const col = COLORS[r.id % COLORS.length], pct = Math.round(r.battery * 100);
+    const bc = r.battery < 0.2 ? "var(--bad)" : (r.battery < 0.4 ? "var(--warn)" : "var(--good)");
+    const status = !r.alive ? "offline" : (r.last_heard > 2 ? `not heard for ${r.last_heard} s` : (r.reason || "idle"));
+    return `<div class="robot"><span class="dot" style="background:${col}"></span><b>R${r.id}</b>
+      <span class="why" title="${status}">${r.task ? `<span class="tag">${r.task}${r.load ? " · loaded" : ""}</span> ` : ""}${status}</span>
+      <span><div class="bat"><i style="width:${pct}%;background:${bc}"></i></div><small>${pct}%</small></span></div>`;
+  }).join("");
+  const ev = $("events");
+  for (const [t, rid, text] of s.events) {
+    const d = document.createElement("div");
+    d.innerHTML = `<b>${String(t).padStart(4, " ")}s</b> ${rid >= 0 ? `<span style="color:${COLORS[rid % COLORS.length]}">R${rid}</span> ` : ""}${text.replace(/[<>&]/g, "")}`;
+    ev.prepend(d);
+  }
+  while (ev.children.length > 120) ev.lastChild.remove();
+  $("pause").textContent = s.paused ? "Resume" : "Pause";
+  document.querySelectorAll("#policy button").forEach(b => b.classList.toggle("on", b.dataset.p === s.policy));
+}
+
+function connect() {
+  const es = new EventSource("/events");
+  es.onmessage = (m) => {
+    const s = JSON.parse(m.data);
+    if (state && s.t < state.t) { prevPos = {}; curPos = {}; $("events").innerHTML = ""; }
+    prevPos = {}; for (const r of s.robots) prevPos[r.id] = curPos[r.id] ?? r.node;
+    curPos = {}; for (const r of s.robots) curPos[r.id] = r.node;
+    tickMs = 1000 / Math.max(0.25, s.speed); lastT = performance.now(); state = s; render(s);
+  };
+  es.onerror = () => { es.close(); setTimeout(connect, 1000); };
+}
+
+$("map").addEventListener("click", (e) => {
+  if (!layout || tool === "inspect") return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const gx = Math.floor((e.clientX - rect.left - ox) / cell), gy = Math.floor((e.clientY - rect.top - oy) / cell);
+  const n = layout.nodes.find(n => n.x === gx && n.y === gy);
+  if (n) post("/api/chaos", { kind: tool === "block" ? "toggle_block" : "toggle_deadzone", arg: n.id });
+});
+document.querySelectorAll("#tool button").forEach(b => b.onclick = () => {
+  tool = b.dataset.t; document.querySelectorAll("#tool button").forEach(x => x.classList.toggle("on", x === b));
+});
+document.querySelectorAll("#policy button").forEach(b => b.onclick = async () => {
+  await post("/api/control", { policy: b.dataset.p }); await loadLayout();
+});
+let split = false;
+$("split").onclick = () => { split = !split; post("/api/chaos", { kind: split ? "partition" : "heal" }); $("split").textContent = split ? "Heal network" : "Split network"; };
+$("kill").onclick = () => post("/api/chaos", { kind: "crash" });
+$("burst").onclick = () => post("/api/chaos", { kind: "burst", arg: 8 });
+$("clear").onclick = () => { split = false; $("split").textContent = "Split network"; $("loss").value = 0; $("lossv").textContent = "0%"; post("/api/chaos", { kind: "clear" }); };
+$("loss").oninput = (e) => { $("lossv").textContent = e.target.value + "%"; };
+$("loss").onchange = (e) => post("/api/chaos", { kind: "loss", arg: e.target.value / 100 });
+$("speed").onchange = (e) => post("/api/control", { speed: +e.target.value });
+$("pause").onclick = () => post("/api/control", { paused: !(state && state.paused) });
+$("reset").onclick = async () => { await post("/api/control", { reset: true }); await loadLayout(); };
+$("theme").onclick = () => {
+  const cur = document.documentElement.dataset.theme;
+  const dark = cur ? cur === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  document.documentElement.dataset.theme = dark ? "light" : "dark";
+};
+const STATIC = new URLSearchParams(location.search).has("static");
+async function snapshot() {
+  const s = await (await fetch("/api/state")).json();
+  curPos = {}; prevPos = {}; for (const r of s.robots) { curPos[r.id] = r.node; prevPos[r.id] = r.node; }
+  state = s; render(s); lastT = performance.now() - 10000;
+}
+loadLayout().then(() => { if (STATIC) { snapshot(); } else { connect(); } requestAnimationFrame(frame); });
+</script>
+</body>
+</html>

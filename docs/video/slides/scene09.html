@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Benchmark results</title>
+<link rel="stylesheet" href="video.css">
+<style>
+  #chart { position: absolute; left: 30px; top: 136px; width: 850px; height: 452px; }
+  svg text { font-family: "Segoe UI", system-ui, sans-serif; }
+  .kpis { position: absolute; left: 900px; top: 146px; width: 340px; display: flex; flex-direction: column; gap: 12px; }
+  .tile { border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; }
+  .tile .v { font-size: 46px; font-weight: 800; line-height: 1.05; }
+  .tile .l { font-size: 16px; color: var(--muted); margin-top: 2px; }
+  .tile.hero .v { color: var(--good); font-size: 64px; }
+</style></head>
+<body class="slide">
+<div class="top"><span class="brand">SANCHAR</span><span class="ps">SIH26123 · Bharat Electronics Limited</span><span class="sp"></span><span class="tagpill" data-bind="tag"></span></div>
+<h1 class="fx" data-at="t:0">SANCHAR vs stop-and-wait<small>Makespan reduction, mean ± 95% CI over seeds where both finished (the conservative figure)</small></h1>
+<svg id="chart" viewBox="0 0 850 452"></svg>
+<div class="kpis">
+  <div class="fx" data-at="w:zero@-0.2"><div class="tile hero lit" data-at="w:zero" data-until="kw:six robots">
+    <div class="v" data-bind="n.collisions"></div><div class="l">collisions in <span data-bind="n.runs"></span> SANCHAR runs, and 0 unfinished</div></div></div>
+  <div class="tile fx" data-at="t:0.5"><div class="v"><span data-bind="n.families"></span> × <span data-bind="n.seeds"></span></div>
+    <div class="l">scenarios × seeds, identical instances for both methods</div></div>
+  <div class="tile fx" data-at="kw:six robots"><div class="v" style="color:var(--accent)"><span data-bind="n.r6_exact"></span>%</div>
+    <div class="l">faster with 6 AMRs on overlapping paths (the PS criterion, target 20%), better in <span data-bind="n.r6_better"></span>/30 seeds</div></div>
+  <div class="fx" data-at="t:1.2" style="font-size:13.5px;line-height:1.35;color:var(--muted)">Verified with pytest + Hypothesis property tests ·
+    Scalability: messages grow linearly; 100+ robot runs next</div>
+</div>
+<script src="video.js"></script>
+<script>
+const ROWS = [
+  ["warehouse_overlap", "6 AMRs, overlapping paths", "kw:six robots"],
+  ["blocked_aisle", "6 AMRs, pallet blocks an aisle"],
+  ["warehouse_loss30", "6 AMRs, 30% packet loss"],
+  ["warehouse_12", "12 AMRs, overlapping paths", "kw:twelve robots"],
+  ["intersection_cross", "Single-lane 4-way intersection", "kw:intersection"],
+  ["corridor_swap", "Isolated two-way chokepoint", "kw:weak case"],
+  ["market_warehouse", "Live orders", "kw:live orders"],
+  ["market_blocked", "Live orders + blocked aisle"],
+  ["market_crash", "Live orders + robot crash"],
+  ["market_loss30", "Live orders + 30% packet loss"],
+  ["market_deadzone", "Live orders + Wi-Fi dead zone"],
+];
+const LO = -25, HI = 70, X0 = 372, W = 420, RH = 35, BAR = 18;
+// highlights follow the narration order; each one ends when the next is spoken
+const HL_ORDER = ["kw:six robots", "kw:twelve robots", "kw:live orders", "kw:intersection", "kw:weak case"];
+const HALO = 'paint-order="stroke" stroke="#0e1116" stroke-width="6" stroke-linejoin="round"';
+const X = (v) => X0 + ((v - LO) / (HI - LO)) * W;
+const rowY = (i) => 38 + i * RH + (i >= 6 ? 30 : 0);
+let bars = [];
+function barPath(x0, x1, y, h) {
+  const r = Math.min(4, Math.abs(x1 - x0));
+  if (x1 >= x0) return `M${x0} ${y} H${x1 - r} Q${x1} ${y} ${x1} ${y + r} V${y + h - r} Q${x1} ${y + h} ${x1 - r} ${y + h} H${x0} Z`;
+  return `M${x0} ${y} H${x1 + r} Q${x1} ${y} ${x1} ${y + r} V${y + h - r} Q${x1} ${y + h} ${x1 + r} ${y + h} H${x0} Z`;
+}
+window.onInit = function (D) {
+  const rows = D.data.rows;
+  let s = "", lab = "";                             // lab: value labels, drawn last (above the target line)
+  // gridlines and ticks
+  for (const v of [-20, 0, 20, 40, 60]) {
+    s += `<line x1="${X(v)}" y1="26" x2="${X(v)}" y2="440" stroke="${v === 0 ? "#4b5563" : "#262c36"}" stroke-width="1"/>`;
+    s += `<text x="${X(v)}" y="452" text-anchor="middle" fill="#9aa3b2" font-size="13">${v}%</text>`;
+  }
+  s += `<text x="12" y="22" fill="#9aa3b2" font-size="13" font-weight="700" letter-spacing="1">FIXED TASKS</text>`;
+  s += `<text x="12" y="${rowY(6) - 14}" fill="#9aa3b2" font-size="13" font-weight="700" letter-spacing="1">LIVE ORDERS, ROBOTS ALLOCATE THEM THEMSELVES</text>`;
+  ROWS.forEach(([fam, label, hl], i) => {
+    const r = rows[fam], y = rowY(i);
+    if (hl) {
+      const next = HL_ORDER[HL_ORDER.indexOf(hl) + 1];
+      s += `<rect class="fade" data-at="${hl}" ${next ? `data-until="${next}"` : ""} x="4" y="${y - 7}" width="842" height="${RH - 2}" rx="7" fill="rgba(252,211,77,.13)" stroke="rgba(252,211,77,.55)"/>`;
+    }
+    s += `<text x="12" y="${y + 14}" fill="#e8eaee" font-size="15.5" font-weight="${fam === "warehouse_overlap" ? 700 : 500}">${label}</text>`;
+    if (fam === "intersection_cross") {
+      lab += `<text x="${X(LO) + 4}" y="${y + 14}" fill="#e8eaee" font-size="15" font-weight="600" ${HALO}>stop-and-wait gridlocked ${r.gridlocked}/${r.seeds} · SANCHAR finished all</text>`;
+      return;
+    }
+    const v = r.red, c = r.ci, weak = v < 0;
+    const col = weak ? "#6b7280" : "#60a5fa";
+    s += `<path id="bar${i}" d="" fill="${col}"/>`;
+    s += `<g id="ci${i}" opacity="0" stroke="#e8eaee" stroke-width="1.5"><line x1="${X(v - c)}" y1="${y + BAR / 2}" x2="${X(v + c)}" y2="${y + BAR / 2}"/>` +
+         `<line x1="${X(v - c)}" y1="${y + 4}" x2="${X(v - c)}" y2="${y + BAR - 4}"/><line x1="${X(v + c)}" y1="${y + 4}" x2="${X(v + c)}" y2="${y + BAR - 4}"/></g>`;
+    const lx = weak ? X(0) + 8 : X(v + c) + 8;       // the weak case's label sits right of zero, clear of the row name
+    lab += `<text id="lab${i}" opacity="0" x="${lx}" y="${y + 14}" fill="#e8eaee" font-size="15" font-weight="700" ${HALO}>${v > 0 ? "" : "−"}${Math.abs(v).toFixed(1)}%${weak ? "  (central zone control is faster here)" : ""}</text>`;
+    bars.push({ i, v, y, t0: 0.5 + i * 0.07 });
+  });
+  // PS target line: over the bars, under the value labels
+  s += `<line x1="${X(20)}" y1="26" x2="${X(20)}" y2="440" stroke="#fcd34d" stroke-width="2"/>` +
+       `<text x="${X(20) + 6}" y="22" fill="#fcd34d" font-size="13" font-weight="700">PS target 20%</text>`;
+  document.getElementById("chart").innerHTML = s + lab;
+};
+window.onFrame = function (t) {
+  let sig = "";
+  for (const b of bars) {
+    const p = Math.max(0, Math.min(1, (t - b.t0) / 0.9)), e = 1 - Math.pow(1 - p, 3);
+    const x0 = X(0), x1 = X(0) + (X(b.v) - X(0)) * e;
+    document.getElementById("bar" + b.i).setAttribute("d", Math.abs(x1 - x0) < 0.5 ? "" : barPath(x0, x1, b.y, BAR));
+    const lp = Math.max(0, Math.min(1, (t - b.t0 - 0.8) / 0.3));
+    document.getElementById("ci" + b.i).setAttribute("opacity", lp);
+    document.getElementById("lab" + b.i).setAttribute("opacity", lp);
+    sig += e.toFixed(3) + lp.toFixed(2);
+  }
+  return sig;
+};
+</script>
+</body></html>

@@ -1,0 +1,16 @@
+{
+ "ticks": 210,
+ "orders_done": 24,
+ "orders": 24,
+ "collisions": 0,
+ "robots_alive": 5,
+ "decision_ms_p50": 0.16820000018924475,
+ "decision_ms_p99": 1.824999984819442,
+ "wall_s": 4.0,
+ "robots": 6,
+ "killed": [
+  2
+ ],
+ "loss": 0.0,
+ "seed": 3
+}

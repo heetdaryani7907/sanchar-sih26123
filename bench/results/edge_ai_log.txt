@@ -1,0 +1,9 @@
+legs: train 8510  test 5625
+ETA error on held-out seeds: path length 3.77 s  ->  learned model 3.38 s (10% lower)
+weights: {'path_len': np.float64(1.052), 'corridor_nodes': np.float64(0.259), 'peers_near_path': np.float64(0.1), 'peers_near_start': np.float64(0.529), 'peers_near_goal': np.float64(0.895), 'plan_overlap': np.float64(0.198), 'opposing_in_corridors': np.float64(0.758), 'bias': np.float64(-0.192)}
+A/B market_warehouse : makespan -0.9% better, latency +0.1% better, 6/20 seeds, collisions 0, unfinished 0
+A/B market_12        : makespan +4.6% better, latency +2.8% better, 14/20 seeds, collisions 0, unfinished 0
+A/B market_blocked   : makespan +1.0% better, latency +3.7% better, 15/20 seeds, collisions 0, unfinished 0
+A/B market_loss30    : makespan +2.5% better, latency +1.0% better, 13/20 seeds, collisions 0, unfinished 0
+A/B market_crash     : makespan +0.8% better, latency +0.3% better, 7/20 seeds, collisions 0, unfinished 0
+saved sanchar\edge_ai\eta_model.json [456s]

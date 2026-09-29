@@ -1,0 +1,13 @@
+[project]
+name = "sanchar"
+version = "0.1.0"
+description = "SANCHAR: decentralized edge coordination for AMR fleets (SIH26123, Bharat Electronics Limited)"
+requires-python = ">=3.11"
+dependencies = ["msgspec>=0.18", "numpy>=1.26"]    # the dashboard uses only the standard library
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "hypothesis>=6"]
+docs = ["python-pptx>=0.6", "playwright>=1.40", "edge-tts>=6", "imageio-ffmpeg>=0.4"]   # deck and demo video
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,530 @@
+[
+ {
+  "family": "corridor_swap",
+  "seeds": 30,
+  "robots": 4,
+  "description": "4 AMRs crossing a narrow single-lane passage in both directions",
+  "mode": "fixed tasks",
+  "baseline_makespan": [
+   299.6,
+   122.09864403202752
+  ],
+  "sanchar_makespan": [
+   247.5,
+   3.522652073269562
+  ],
+  "baseline_sum": [
+   2545.6666666666665,
+   805.0693508989153
+  ],
+  "sanchar_sum": [
+   2257.8333333333335,
+   23.819769531253456
+  ],
+  "makespan_reduction_pct": [
+   -9.851496334254145,
+   10.4839185901481
+  ],
+  "sum_completion_reduction_pct": [
+   -7.61858402477932,
+   9.554913076185624
+  ],
+  "sanchar_collisions": 0,
+  "baseline_collisions": 0,
+  "sanchar_unfinished": 0,
+  "baseline_unfinished": 2,
+  "seeds_sanchar_better": 5,
+  "baseline_makespan_median": 220.5,
+  "sanchar_makespan_median": 246.0,
+  "both_finished_seeds": 28,
+  "makespan_reduction_pct_both_finished": [
+   -16.43850797717706,
+   5.202088339447271
+  ],
+  "baseline_gridlocked_seeds": 2,
+  "bytes_per_robot_tick": 1816.0338127772727,
+  "decision_ms_p50": 0.3724599984707311,
+  "decision_ms_p99": 1.0340000444557518,
+  "baseline_backoffs": 1637
+ },
+ {
+  "family": "intersection_cross",
+  "seeds": 30,
+  "robots": 4,
+  "description": "4 AMRs, dead-end arms around one single-lane 4-way intersection (gridlock stress test)",
+  "mode": "fixed tasks",
+  "baseline_makespan": [
+   800.0,
+   0.0
+  ],
+  "sanchar_makespan": [
+   114.2,
+   1.9887529073358465
+  ],
+  "baseline_sum": [
+   9600.0,
+   0.0
+  ],
+  "sanchar_sum": [
+   835.5333333333333,
+   20.993226868504287
+  ],
+  "makespan_reduction_pct": [
+   85.725,
+   0.24859411341698082
+  ],
+  "sum_completion_reduction_pct": [
+   91.29652777777778,
+   0.21867944654691956
+  ],
+  "sanchar_collisions": 0,
+  "baseline_collisions": 0,
+  "sanchar_unfinished": 0,
+  "baseline_unfinished": 30,
+  "seeds_sanchar_better": 30,
+  "baseline_makespan_median": 800.0,
+  "sanchar_makespan_median": 114.0,
+  "both_finished_seeds": 0,
+  "makespan_reduction_pct_both_finished": [
+   NaN,
+   NaN
+  ],
+  "baseline_gridlocked_seeds": 30,
+  "bytes_per_robot_tick": 1769.8434314479227,
+  "decision_ms_p50": 0.10323333456957091,
+  "decision_ms_p99": 0.5540999991353601,
+  "baseline_backoffs": 9607
+ },
+ {
+  "family": "warehouse_overlap",
+  "seeds": 30,
+  "robots": 6,
+  "description": "6 AMRs, cross-warehouse trips through shared aisles",
+  "mode": "fixed tasks",
+  "baseline_makespan": [
+   285.1666666666667,
+   124.23511954884229
+  ],
+  "sanchar_makespan": [
+   145.53333333333333,
+   6.684505499868916
+  ],
+  "baseline_sum": [
+   3238.9333333333334,
+   1189.1153706019352
+  ],
+  "sanchar_sum": [
+   1814.7666666666667,
+   64.40861446350354
+  ],
+  "makespan_reduction_pct": [
+   29.27660070805989,
+   7.547356611875804
+  ],
+  "sum_completion_reduction_pct": [
+   29.62222460550946,
+   6.785591561688974
+  ],
+  "sanchar_collisions": 0,
+  "baseline_collisions": 0,
+  "sanchar_unfinished": 0,
+  "baseline_unfinished": 2,
+  "seeds_sanchar_better": 30,
+  "baseline_makespan_median": 189.0,
+  "sanchar_makespan_median": 145.0,
+  "both_finished_seeds": 28,
+  "makespan_reduction_pct_both_finished": [
+   24.96064361577845,
+   4.844834396804267
+  ],
+  "baseline_gridlocked_seeds": 2,
+  "bytes_per_robot_tick": 2549.719818992581,
+  "decision_ms_p50": 0.14148000336717814,
+  "decision_ms_p99": 1.582199998665601,
+  "baseline_backoffs": 1652
+ },
+ {
+  "family": "blocked_aisle",
+  "seeds": 30,
+  "robots": 6,
+  "description": "6 AMRs, one aisle blocked by a pallet for 82 s",
+  "mode": "fixed tasks",
+  "baseline_makespan": [
+   383.23333333333335,
+   166.8779939538876
+  ],
+  "sanchar_makespan": [
+   147.3,
+   6.449850658299602
+  ],
+  "baseline_sum": [
+   5479.566666666667,
+   2754.097194381717
+  ],
+  "sanchar_sum": [
+   1862.5666666666666,
+   76.46377084527255
+  ],
+  "makespan_reduction_pct": [
+   37.24769613788514,
+   8.737171605364521
+  ],
+  "sum_completion_reduction_pct": [
+   37.84719596153719,
+   8.921757103029023
+  ],
+  "sanchar_collisions": 0,
+  "baseline_collisions": 0,
+  "sanchar_unfinished": 0,
+  "baseline_unfinished": 4,
+  "seeds_sanchar_better": 30,
+  "baseline_makespan_median": 209.5,
+  "sanchar_makespan_median": 148.0,
+  "both_finished_seeds": 26,
+  "makespan_reduction_pct_both_finished": [
+   29.12939297961106,
+   4.530634445781001
+  ],
+  "baseline_gridlocked_seeds": 4,
+  "bytes_per_robot_tick": 2552.000072582875,
+  "decision_ms_p50": 0.15626333479303867,
+  "decision_ms_p99": 1.545500010251999,
+  "baseline_backoffs": 3360
+ },
+ {
+  "family": "warehouse_loss30",
+  "seeds": 30,
+  "robots": 6,
+  "description": "6 AMRs, cross-warehouse trips through shared aisles, 30% packet loss",
+  "mode": "fixed tasks",
+  "baseline_makespan": [
+   285.1666666666667,
+   124.23511954884229
+  ],
+  "sanchar_makespan": [
+   164.83333333333334,
+   8.265399163871193
+  ],
+  "baseline_sum": [
+   3238.9333333333334,
+   1189.1153706019352
+  ],
+  "sanchar_sum": [
+   1993.4666666666667,
+   102.38961031381338
+  ],
+  "makespan_reduction_pct": [
+   19.4043336023514,
+   9.57110772479112
+  ],
+  "sum_completion_reduction_pct": [
+   23.140357742699962,
+   7.359565654193042
+  ],
+  "sanchar_collisions": 0,
+  "baseline_collisions": 0,
+  "sanchar_unfinished": 0,
+  "baseline_unfinished": 2,
+  "seeds_sanchar_better": 25,
+  "baseline_makespan_median": 189.0,
+  "sanchar_makespan_median": 164.5,
+  "both_finished_seeds": 28,
+  "makespan_reduction_pct_both_finished": [
+   14.471309812043165,
+   7.179289715871668
+  ],
+  "baseline_gridlocked_seeds": 2,
+  "bytes_per_robot_tick": 2471.290394882555,
+  "decision_ms_p50": 0.21166333074991903,
+  "decision_ms_p99": 1.6251000051852316,
+  "baseline_backoffs": 1652
+ },
+ {
+  "family": "warehouse_12",
+  "seeds": 30,
+  "robots": 12,
+  "description": "12 AMRs, cross-warehouse trips through shared aisles",
+  "mode": "fixed tasks",
+  "baseline_makespan": [
+   633.2333333333333,
+   184.98829996952236
+  ],
+  "sanchar_makespan": [
+   152.03333333333333,
+   8.92660295172037
+  ],
+  "baseline_sum": [
+   9231.133333333333,
+   1765.3005069261983
+  ],
+  "sanchar_sum": [
+   2836.4666666666667,
+   157.04676678538559
+  ],
+  "makespan_reduction_pct": [
+   63.834466828090136,
+   6.873106025341096
+  ],
+  "sum_completion_reduction_pct": [
+   63.25530217590655,
+   5.441417249400678
+  ],
+  "sanchar_collisions": 0,
+  "baseline_collisions": 0,
+  "sanchar_unfinished": 0,
+  "baseline_unfinished": 7,
+  "seeds_sanchar_better": 30,
+  "baseline_makespan_median": 398.0,
+  "sanchar_makespan_median": 152.0,
+  "both_finished_seeds": 23,
+  "makespan_reduction_pct_both_finished": [
+   55.89423209461032,
+   5.605810370921256
+  ],
+  "baseline_gridlocked_seeds": 7,
+  "bytes_per_robot_tick": 5052.23901118887,
+  "decision_ms_p50": 0.3332733331869046,
+  "decision_ms_p99": 1.4193999813869596,
+  "baseline_backoffs": 8666
+ },
+ {
+  "family": "market_warehouse",
+  "seeds": 30,
+  "robots": 6,
+  "description": "6 AMRs, 36 live orders (Poisson, 1 per 3 s)",
+  "mode": "live orders",
+  "baseline_makespan": [
+   519.0666666666667,
+   164.01678230836401
+  ],
+  "sanchar_makespan": [
+   185.26666666666668,
+   6.559065512591517
+  ],
+  "baseline_sum": [
+   159.32870370370372,
+   45.60164734461476
+  ],
+  "sanchar_sum": [
+   47.09166666666667,
+   1.9693173007736153
+  ],
+  "makespan_reduction_pct": [
+   49.16986736389202,
+   7.3253741844956775
+  ],
+  "sum_completion_reduction_pct": [
+   62.3466166781264,
+   4.989219798406369
+  ],
+  "sanchar_collisions": 0,
+  "baseline_collisions": 0,
+  "sanchar_unfinished": 0,
+  "baseline_unfinished": 4,
+  "seeds_sanchar_better": 30,
+  "baseline_makespan_median": 323.0,
+  "sanchar_makespan_median": 186.5,
+  "both_finished_seeds": 26,
+  "makespan_reduction_pct_both_finished": [
+   43.21394952243951,
+   5.366236498248347
+  ],
+  "baseline_gridlocked_seeds": 4,
+  "bytes_per_robot_tick": 2985.5645988756933,
+  "decision_ms_p50": 0.09515000468430419,
+  "decision_ms_p99": 1.5033000090625137,
+  "baseline_backoffs": 4006
+ },
+ {
+  "family": "market_blocked",
+  "seeds": 30,
+  "robots": 6,
+  "description": "6 AMRs, 36 live orders (Poisson, 1 per 3 s); aisle x=16 blocked from 15 s to 120 s",
+  "mode": "live orders",
+  "baseline_makespan": [
+   542.5,
+   165.28763911925725
+  ],
+  "sanchar_makespan": [
+   188.66666666666666,
+   5.404635294155864
+  ],
+  "baseline_sum": [
+   196.24259259259262,
+   85.35746731897972
+  ],
+  "sanchar_sum": [
+   52.18703703703704,
+   2.364354399632541
+  ],
+  "makespan_reduction_pct": [
+   51.739956868725386,
+   6.639313998243455
+  ],
+  "sum_completion_reduction_pct": [
+   63.21700668034419,
+   4.521893843557499
+  ],
+  "sanchar_collisions": 0,
+  "baseline_collisions": 0,
+  "sanchar_unfinished": 0,
+  "baseline_unfinished": 5,
+  "seeds_sanchar_better": 30,
+  "baseline_makespan_median": 337.5,
+  "sanchar_makespan_median": 189.5,
+  "both_finished_seeds": 25,
+  "makespan_reduction_pct_both_finished": [
+   44.607948242470464,
+   3.359581505960738
+  ],
+  "baseline_gridlocked_seeds": 5,
+  "bytes_per_robot_tick": 2992.4316810815344,
+  "decision_ms_p50": 0.10641666497879972,
+  "decision_ms_p99": 1.7841000226326287,
+  "baseline_backoffs": 4057
+ },
+ {
+  "family": "market_crash",
+  "seeds": 30,
+  "robots": 6,
+  "description": "6 AMRs, 36 live orders (Poisson, 1 per 3 s); robot R3 dies at 30 s mid-task, technician removes it at 120 s",
+  "mode": "live orders",
+  "baseline_makespan": [
+   473.93333333333334,
+   123.49870873305436
+  ],
+  "sanchar_makespan": [
+   230.26666666666668,
+   6.915798268155583
+  ],
+  "baseline_sum": [
+   159.83796296296296,
+   12.860412797692685
+  ],
+  "sanchar_sum": [
+   81.22870370370372,
+   3.387671272387144
+  ],
+  "makespan_reduction_pct": [
+   40.954438144790224,
+   6.182095277031496
+  ],
+  "sum_completion_reduction_pct": [
+   46.93284191934125,
+   4.593236746699985
+  ],
+  "sanchar_collisions": 0,
+  "baseline_collisions": 0,
+  "sanchar_unfinished": 0,
+  "baseline_unfinished": 2,
+  "seeds_sanchar_better": 30,
+  "baseline_makespan_median": 362.5,
+  "sanchar_makespan_median": 229.0,
+  "both_finished_seeds": 28,
+  "makespan_reduction_pct_both_finished": [
+   37.80832658370382,
+   4.7009497368103705
+  ],
+  "baseline_gridlocked_seeds": 2,
+  "bytes_per_robot_tick": 2584.2296463172297,
+  "decision_ms_p50": 0.12363667095390458,
+  "decision_ms_p99": 1.8461999716237187,
+  "baseline_backoffs": 2379
+ },
+ {
+  "family": "market_loss30",
+  "seeds": 30,
+  "robots": 6,
+  "description": "6 AMRs, 36 live orders (Poisson, 1 per 3 s)",
+  "mode": "live orders",
+  "baseline_makespan": [
+   519.0666666666667,
+   164.01678230836401
+  ],
+  "sanchar_makespan": [
+   199.23333333333332,
+   7.058040046085428
+  ],
+  "baseline_sum": [
+   159.32870370370372,
+   45.60164734461476
+  ],
+  "sanchar_sum": [
+   53.919444444444444,
+   2.209568254499175
+  ],
+  "makespan_reduction_pct": [
+   45.1335999515478,
+   7.978757393504093
+  ],
+  "sum_completion_reduction_pct": [
+   56.96482816894721,
+   5.791327538754835
+  ],
+  "sanchar_collisions": 0,
+  "baseline_collisions": 0,
+  "sanchar_unfinished": 0,
+  "baseline_unfinished": 4,
+  "seeds_sanchar_better": 30,
+  "baseline_makespan_median": 323.0,
+  "sanchar_makespan_median": 195.0,
+  "both_finished_seeds": 26,
+  "makespan_reduction_pct_both_finished": [
+   38.641333277426945,
+   5.834210358389057
+  ],
+  "baseline_gridlocked_seeds": 4,
+  "bytes_per_robot_tick": 2936.297077019793,
+  "decision_ms_p50": 0.13941332969504097,
+  "decision_ms_p99": 1.7050000315066427,
+  "baseline_backoffs": 4006
+ },
+ {
+  "family": "market_deadzone",
+  "seeds": 30,
+  "robots": 6,
+  "description": "6 AMRs, 36 live orders (Poisson, 1 per 3 s); Wi-Fi dead zone around (11,8) from 20 s to 140 s",
+  "mode": "live orders",
+  "baseline_makespan": [
+   692.0,
+   188.13174725777776
+  ],
+  "sanchar_makespan": [
+   291.3666666666667,
+   6.84281367518472
+  ],
+  "baseline_sum": [
+   240.99259259259262,
+   68.16993170723744
+  ],
+  "sanchar_sum": [
+   133.66018518518518,
+   7.567694155433907
+  ],
+  "makespan_reduction_pct": [
+   38.10060671083089,
+   11.118727829450625
+  ],
+  "sum_completion_reduction_pct": [
+   28.91253551141215,
+   10.111266812571621
+  ],
+  "sanchar_collisions": 0,
+  "baseline_collisions": 0,
+  "sanchar_unfinished": 0,
+  "baseline_unfinished": 8,
+  "seeds_sanchar_better": 29,
+  "baseline_makespan_median": 393.0,
+  "sanchar_makespan_median": 292.0,
+  "both_finished_seeds": 22,
+  "makespan_reduction_pct_both_finished": [
+   22.552342484466358,
+   7.4115540653926
+  ],
+  "baseline_gridlocked_seeds": 8,
+  "bytes_per_robot_tick": 2717.4139455233917,
+  "decision_ms_p50": 0.19206666523435464,
+  "decision_ms_p99": 1.7914000200107694,
+  "baseline_backoffs": 5167
+ }
+]

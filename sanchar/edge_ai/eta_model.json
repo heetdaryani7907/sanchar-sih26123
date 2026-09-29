@@ -1,0 +1,26 @@
+{
+ "features": [
+  "path_len",
+  "corridor_nodes",
+  "peers_near_path",
+  "peers_near_start",
+  "peers_near_goal",
+  "plan_overlap",
+  "opposing_in_corridors",
+  "bias"
+ ],
+ "weights": [
+  1.05218,
+  0.25924,
+  0.0996,
+  0.52868,
+  0.89488,
+  0.19777,
+  0.75818,
+  -0.19223
+ ],
+ "train_legs": 8510,
+ "test_legs": 5625,
+ "mae_path_length": 3.7701333333333333,
+ "mae_model": 3.379535977357743
+}
